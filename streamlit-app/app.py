@@ -15,6 +15,9 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# ✅ DEBUG TEMPORANEO: verifica se la chiave è caricata
+st.text("API_KEY loaded: " + ("✅" if "GOOGLE_CSE_API_KEY" in st.secrets else "❌"))
+
 class EnhancedGoogleCSE:
     """Enhanced Google CSE with advanced scraping capabilities"""
     
