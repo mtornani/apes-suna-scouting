@@ -1,145 +1,149 @@
-<div align="center">
+# APES Suna Scouting
 
-# Suna - Open Source Generalist AI Agent
+APES Suna Scouting is a specialized AI assistant for market analysis, competitor research, and startup scouting. Based on the open-source Suna project, this version is customized for hybrid scouting operations and business intelligence.
 
-(that acts on your behalf)
+Through natural conversation, APES Suna becomes your digital companion for comprehensive market research, competitor analysis, and strategic business intelligence—combining powerful automation capabilities with an intuitive interface that understands your scouting needs and delivers actionable insights.
 
-![Suna Screenshot](frontend/public/banner.png)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![GitHub Repo stars](https://img.shields.io/github/stars/kortix-ai/suna?style=social)](https://github.com/kortix-ai/suna)
 
-Suna is a fully open source AI assistant that helps you accomplish real-world tasks with ease. Through natural conversation, Suna becomes your digital companion for research, data analysis, and everyday challenges—combining powerful capabilities with an intuitive interface that understands what you need and delivers results.
+## Features for Scouting & Analysis
 
-Suna's powerful toolkit includes seamless browser automation to navigate the web and extract data, file management for document creation and editing, web crawling and extended search capabilities, command-line execution for system tasks, website deployment, and integration with various APIs and services. These capabilities work together harmoniously, allowing Suna to solve your complex problems and automate workflows through simple conversations!
+APES Suna's specialized toolkit includes:
 
-[![License](https://img.shields.io/badge/License-Apache--2.0-blue)](./license)
-[![Discord Follow](https://dcbadge.limes.pink/api/server/Py6pCBUUPw?style=flat)](https://discord.gg/Py6pCBUUPw)
-[![Twitter Follow](https://img.shields.io/twitter/follow/kortixai)](https://x.com/kortixai)
-[![GitHub Repo stars](https://img.shields.io/github/stars/kortix-ai/suna)](https://github.com/kortix-ai/suna)
-[![Issues](https://img.shields.io/github/issues/kortix-ai/suna)](https://github.com/kortix-ai/suna/labels/bug)
+- **🔍 Market Intelligence** - Deep market research and trend analysis
+- **🏢 Competitor Analysis** - Comprehensive competitor profiling and benchmarking
+- **🚀 Startup Scouting** - Automated discovery and analysis of emerging companies
+- **👥 LinkedIn Prospecting** - Automated lead generation and contact discovery
+- **📊 Data Extraction** - Web scraping for business data and market insights
+- **📋 Report Generation** - Professional PDF reports with findings and recommendations
+- **🌐 Multi-source Research** - Integration with Crunchbase, LinkedIn, and industry databases
+- **📈 Investment Analysis** - VC funding tracking and startup evaluation
 
-</div>
+These capabilities work together harmoniously, allowing APES Suna to solve complex business intelligence challenges and automate scouting workflows through simple conversations!
 
 ## Table of Contents
-
-- [Suna Architecture](#project-architecture)
-  - [Backend API](#backend-api)
-  - [Frontend](#frontend)
-  - [Agent Docker](#agent-docker)
-  - [Supabase Database](#supabase-database)
-- [Use Cases](#use-cases)
+- [Architecture](#architecture)
+- [Scouting Use Cases](#scouting-use-cases)
 - [Self-Hosting](#self-hosting)
+- [Quick Start](#quick-start)
+- [Contributing](#contributing)
 - [Acknowledgements](#acknowledgements)
 - [License](#license)
 
-## Project Architecture
+## Architecture
 
-![Architecture Diagram](docs/images/diagram.png)
-
-Suna consists of four main components:
+APES Suna consists of four main components:
 
 ### Backend API
-
-Python/FastAPI service that handles REST endpoints, thread management, and LLM integration with Anthropic, and others via LiteLLM.
+Python/FastAPI service that handles REST endpoints, thread management, and LLM integration with Anthropic Claude, OpenAI GPT, and others via LiteLLM.
 
 ### Frontend
-
-Next.js/React application providing a responsive UI with chat interface, dashboard, etc.
+Next.js/React application providing a responsive UI with chat interface, dashboard, and scouting-specific analytics views.
 
 ### Agent Docker
-
-Isolated execution environment for every agent - with browser automation, code interpreter, file system access, tool integration, and security features.
+Isolated execution environment for every agent - with browser automation, code interpreter, file system access, tool integration, and security features optimized for business research.
 
 ### Supabase Database
+Handles data persistence with authentication, user management, conversation history, file storage, agent state, scouting analytics, and real-time subscriptions.
 
-Handles data persistence with authentication, user management, conversation history, file storage, agent state, analytics, and real-time subscriptions.
+## Scouting Use Cases
 
-## Use Cases
+### Market Research & Analysis
+- **Competitor Deep Dive** - "Analyze the top 10 competitors in the EU fintech space. Give me their funding history, key products, market positioning, and recent news. Generate a comprehensive competitive landscape report."
 
-1. **Competitor Analysis** ([Watch](https://www.suna.so/share/5ee791ac-e19c-4986-a61c-6d0659d0e5bc)) - _"Analyze the market for my next company in the healthcare industry, located in the UK. Give me the major players, their market size, strengths, and weaknesses, and add their website URLs. Once done, generate a PDF report."_
+- **Market Sizing** - "Research the Italian e-commerce market size, growth trends, and key players. Include market share analysis and 5-year projections with sources."
 
-2. **VC List** ([Watch](https://www.suna.so/share/804d20a3-cf1c-4adb-83bb-0e77cc6adeac)) - _"Give me the list of the most important VC Funds in the United States based on Assets Under Management. Give me website URLs, and if possible an email to reach them out."_
+- **Industry Trend Analysis** - "Analyze emerging trends in the clean tech industry for 2024-2025. Focus on European startups, funding patterns, and technology innovations."
 
-3. **Looking for Candidates** ([Watch](https://www.suna.so/share/3ae581b0-2db8-4c63-b324-3b8d29762e74)) - _"Go on LinkedIn, and find me 10 profiles available - they are not working right now - for a junior software engineer position, who are located in Munich, Germany. They should have at least one bachelor's degree in Computer Science or anything related to it, and 1-year of experience in any field/role."_
+### Startup Scouting & Investment Research
+- **VC Fund Research** - "Give me the list of the most important VC Funds in Europe based on Assets Under Management. Include website URLs, contact information, and their investment focus areas."
 
-4. **Planning Company Trip** ([Watch](https://www.suna.so/share/725e64a0-f1e2-4bb6-8a1f-703c2833fd72)) - _"Generate me a route plan for my company. We should go to California. We'll be in 8 people. Compose the trip from the departure (Paris, France) to the activities we can do considering that the trip will be 7 days long - departure on the 21st of Apr 2025. Check the weather forecast and temperature for the upcoming days, and based on that, you can plan our activities (outdoor vs indoor)."_
+- **Recently Funded Startups** - "Go on Crunchbase, Dealroom, and TechCrunch, filter by Series A funding rounds in the SaaS Finance Space, and build a report with company data, founders, and contact info for outbound sales."
 
-5. **Working on Excel** ([Watch](https://www.suna.so/share/128f23a4-51cd-42a6-97a0-0b458b32010e)) - _"My company asked me to set up an Excel spreadsheet with all the information about Italian lottery games (Lotto, 10eLotto, and Million Day). Based on that, generate and send me a spreadsheet with all the basic information (public ones)."_
+- **Startup Discovery** - "Find 20 promising AI startups in Germany that raised seed funding in the last 12 months. Include founder backgrounds, product descriptions, and funding details."
 
-6. **Automate Event Speaker Prospecting** ([Watch](https://www.suna.so/share/7a7592ea-ed44-4c69-bcb5-5f9bb88c188c)) - _"Find 20 AI ethics speakers from Europe who've spoken at conferences in the past year. Scrapes conference sites, cross-references LinkedIn and YouTube, and outputs contact info + talk summaries."_
+### Lead Generation & Prospecting
+- **LinkedIn Talent Scouting** - "Go on LinkedIn, and find me 10 profiles available - they are not working right now - for a junior software engineer position, who are located in Munich, Germany. They should have at least one bachelor's degree in Computer Science and 1-year of experience."
 
-7. **Summarize and Cross-Reference Scientific Papers** ([Watch](https://www.suna.so/share/c2081b3c-786e-4e7c-9bf4-46e9b23bb662)) - _"Research and compare scientific papers talking about Alcohol effects on our bodies during the last 5 years. Generate a report about the most important scientific papers talking about the topic I wrote before."_
+- **B2B Prospect Research** - "Research my potential customers (B2B) on LinkedIn. They should be in the clean tech industry. Find their websites and their email addresses. After that, generate personalized first contact emails."
 
-8. **Research + First Contact Draft** ([Watch](https://www.suna.so/share/6b6296a6-8683-49e5-9ad0-a32952d12c44)) - _"Research my potential customers (B2B) on LinkedIn. They should be in the clean tech industry. Find their websites and their email addresses. After that, based on the company profile, generate a personalized first contact email where I present my company which is offering consulting services to cleantech companies to maximize their profits and reduce their costs."_
+- **Conference Speaker Research** - "Find 20 AI ethics speakers from Europe who've spoken at conferences in the past year. Scrape conference sites, cross-reference LinkedIn and YouTube, and output contact info + talk summaries."
 
-9. **SEO Analysis** ([Watch](https://www.suna.so/share/43491cb0-cd6c-45f0-880c-66ddc8c4b842)) - _"Based on my website suna.so, generate an SEO report analysis, find top-ranking pages by keyword clusters, and identify topics I'm missing."_
+### Business Intelligence & Reporting
+- **SEO Competitive Analysis** - "Based on my competitor's website, generate an SEO report analysis, find their top-ranking pages by keyword clusters, and identify content gaps I can exploit."
 
-10. **Generate a Personal Trip** ([Watch](https://www.suna.so/share/37b31907-8349-4f63-b0e5-27ca597ed02a)) - _"Generate a personal trip to London, with departure from Bangkok on the 1st of May. The trip will last 10 days. Find an accommodation in the center of London, with a rating on Google reviews of at least 4.5. Find me interesting outdoor activities to do during the journey. Generate a detailed itinerary plan."_
+- **Social Media Intelligence** - "Analyze the social media presence and engagement of my top 5 competitors across LinkedIn, Twitter, and Instagram. Generate insights on their content strategy."
 
-11. **Recently Funded Startups** ([Watch](https://www.suna.so/share/8b2a897e-985a-4d5e-867b-15239274f764)) - _"Go on Crunchbase, Dealroom, and TechCrunch, filter by Series A funding rounds in the SaaS Finance Space, and build a report with company data, founders, and contact info for outbound sales."_
-
-12. **Scrape Forum Discussions** ([Watch](https://www.suna.so/share/7d7a5d93-a20d-48b0-82cc-e9a876e9fd04)) - _"I need to find the best beauty centers in Rome, but I want to find them by using open forums that speak about this topic. Go on Google, and scrape the forums by looking for beauty center discussions located in Rome. Then generate a list of 5 beauty centers with the best comments about them."_
+- **Patent & IP Research** - "Research recent patent filings in the autonomous vehicle space by European companies. Identify key technological trends and potential partnership opportunities."
 
 ## Self-Hosting
 
-Suna can be self-hosted on your own infrastructure using our setup wizard. For a comprehensive guide to self-hosting Suna, please refer to our [Self-Hosting Guide](./docs/SELF-HOSTING.md).
+APES Suna can be self-hosted on your own infrastructure using our setup wizard. For a comprehensive guide to self-hosting, please refer to our [Self-Hosting Guide](docs/self-hosting.md).
 
 The setup process includes:
 
 - Setting up a Supabase project for database and authentication
 - Configuring Redis for caching and session management
 - Setting up Daytona for secure agent execution
-- Integrating with LLM providers (Anthropic, OpenAI, Groq, etc.)
+- Integrating with LLM providers (Anthropic Claude, OpenAI, Groq, etc.)
 - Configuring web search and scraping capabilities
+- Setting up business intelligence APIs (Crunchbase, LinkedIn, etc.)
 
 ### Quick Start
 
-1. **Clone the repository**:
-
+1. **Clone the repository:**
 ```bash
-git clone https://github.com/kortix-ai/suna.git
-cd suna
+git clone https://github.com/mtornani/apes-suna-scouting.git
+cd apes-suna-scouting
 ```
 
-2. **Run the setup wizard**:
-
+2. **Run the setup wizard:**
 ```bash
 python setup.py
 ```
 
-3. **Start or stop the containers**:
-
+3. **Start or stop the containers:**
 ```bash
 python start.py
 ```
 
 ### Manual Setup
+See the [Self-Hosting Guide](docs/self-hosting.md) for detailed manual setup instructions.
 
-See the [Self-Hosting Guide](./docs/SELF-HOSTING.md) for detailed manual setup instructions.
-
-The wizard will guide you through all necessary steps to get your Suna instance up and running. For detailed instructions, troubleshooting tips, and advanced configuration options, see the [Self-Hosting Guide](./SELF-HOSTING.md).
+The wizard will guide you through all necessary steps to get your APES Suna instance up and running. For detailed instructions, troubleshooting tips, and advanced configuration options, see the Self-Hosting Guide.
 
 ## Contributing
 
-We welcome contributions from the community! Please see our [Contributing Guide](./CONTRIBUTING.md) for more details.
+We welcome contributions from the community! Please see our [Contributing Guide](CONTRIBUTING.md) for more details.
 
 ## Acknowledgements
 
 ### Main Contributors
+- **Marco Tornani** - APES Scouting Customization
+- **Adam Cohen Hillel** - Original Suna Creator
+- **Dat-lequoc** - Core Development
+- **Marko Kraemer** - Architecture
 
-- [Adam Cohen Hillel](https://x.com/adamcohenhillel)
-- [Dat-lequoc](https://x.com/datlqqq)
-- [Marko Kraemer](https://twitter.com/markokraemer)
+### Built on Suna
+This project is based on [Suna](https://github.com/kortix-ai/suna) by Kortix AI - a powerful open-source AI assistant framework.
 
 ### Technologies
-
-- [Daytona](https://daytona.io/) - Secure agent execution environment
-- [Supabase](https://supabase.com/) - Database and authentication
-- [Playwright](https://playwright.dev/) - Browser automation
-- [OpenAI](https://openai.com/) - LLM provider
-- [Anthropic](https://www.anthropic.com/) - LLM provider
-- [Tavily](https://tavily.com/) - Search capabilities
-- [Firecrawl](https://firecrawl.dev/) - Web scraping capabilities
-- [RapidAPI](https://rapidapi.com/) - API services
+- **Daytona** - Secure agent execution environment
+- **Supabase** - Database and authentication
+- **Playwright** - Browser automation
+- **OpenAI** - LLM provider
+- **Anthropic Claude** - LLM provider
+- **Tavily** - Search capabilities
+- **Firecrawl** - Web scraping capabilities
+- **RapidAPI** - API services
+- **Crunchbase API** - Startup and funding data
+- **LinkedIn API** - Professional networking data
 
 ## License
 
-Kortix Suna is licensed under the Apache License, Version 2.0. See [LICENSE](./LICENSE) for the full license text.
+APES Suna Scouting is licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) for the full license text.
+
+---
+
+**⚡ Start your intelligent scouting journey today with APES Suna - where AI meets business intelligence!**
