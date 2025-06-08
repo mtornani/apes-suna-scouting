@@ -56,8 +56,7 @@ class EnhancedGoogleCSE:
             }
         }
 
-
-            response = self.session.get(url, params=params, timeout=15)
+          response = self.session.get(url, params=params, timeout=15)
 
             if response.status_code == 200:
                 data = response.json()
