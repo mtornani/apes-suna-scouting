@@ -21,7 +21,7 @@ st.text("API_KEY loaded: " + ("✅" if "GOOGLE_CSE_API_KEY" in st.secrets else "
 class EnhancedGoogleCSE:
     """Motore di ricerca e scraping avanzato con Google CSE"""
     
-    def __init__(self):
+def __init__(self):
         self.api_key = st.secrets.get("GOOGLE_CSE_API_KEY", "")
         self.cse_id = "c12f53951c8884cfd"  # ID del motore CSE
 
@@ -56,7 +56,24 @@ class EnhancedGoogleCSE:
             }
         }
 
-          response = self.session.get(url, params=params, timeout=15)
+    def _google_cse_search(self, query: str, max_results: int):
+        """Core Google CSE search"""
+        
+        if not self.api_key:
+            st.error("🔑 Google CSE API key missing")
+            return []
+
+        try:
+            url = "https://www.googleapis.com/customsearch/v1"
+            params = {
+                'key': self.api_key,
+                'cx': self.cse_id,
+                'q': self._optimize_query(query),
+                'num': min(max_results, 10),
+                'fields': 'items(title,snippet,link,pagemap)'
+            }
+
+            response = self.session.get(url, params=params, timeout=15)
 
             if response.status_code == 200:
                 data = response.json()
