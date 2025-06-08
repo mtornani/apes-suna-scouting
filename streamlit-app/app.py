@@ -56,7 +56,6 @@ class EnhancedGoogleCSE:
             }
         }
 
-}
 
             response = self.session.get(url, params=params, timeout=15)
 
