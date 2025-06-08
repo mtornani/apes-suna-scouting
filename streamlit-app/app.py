@@ -23,7 +23,7 @@ class EnhancedGoogleCSE:
     
     def __init__(self):
         self.api_key = st.secrets.get("GOOGLE_CSE_API_KEY", "")
-        self.cse_id = "c12f53951c8884cfd"  # Your CSE ID
+        self.cse_id =          st.secrets.get("GOOGLE_CSE_ID", "")  # Your CSE ID
         
         self.session = requests.Session()
         self.session.headers.update({
