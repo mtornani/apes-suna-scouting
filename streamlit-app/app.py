@@ -7,7 +7,7 @@ from urllib.parse import quote_plus, urljoin, urlparse
 from bs4 import BeautifulSoup
 import time
 
-# Configure page
+# Configurazione della pagina Streamlit
 st.set_page_config(
     page_title="⚽ APES Football Scout",
     page_icon="🦍",
@@ -15,22 +15,22 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# ✅ DEBUG TEMPORANEO: verifica se la chiave è caricata
+# DEBUG temporaneo per conferma caricamento chiave API
 st.text("API_KEY loaded: " + ("✅" if "GOOGLE_CSE_API_KEY" in st.secrets else "❌"))
 
 class EnhancedGoogleCSE:
-    """Enhanced Google CSE with advanced scraping capabilities"""
+    """Motore di ricerca e scraping avanzato con Google CSE"""
     
     def __init__(self):
         self.api_key = st.secrets.get("GOOGLE_CSE_API_KEY", "")
-        self.cse_id =          st.secrets.get("GOOGLE_CSE_ID", "")  # Your CSE ID
-        
+        self.cse_id = "c12f53951c8884cfd"  # ID del motore CSE
+
         self.session = requests.Session()
         self.session.headers.update({
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
         })
         
-        # Football-specific extraction patterns
+        # Pattern specifici per calcio (divisi per sito)
         self.extraction_patterns = {
             'transfermarkt': {
                 'age': [r'Age:\s*(\d{1,2})', r'(\d{1,2})\s*years old'],
@@ -55,53 +55,11 @@ class EnhancedGoogleCSE:
                 'club': [r'(?:club|team):?\s*([A-Z][^,\n]+)', r'plays for\s*([A-Z][^,\n]+)']
             }
         }
-    
-    def search_and_scrape(self, query: str, max_results: int = 10, deep_scrape: bool = True):
-        """Enhanced search with optional deep scraping"""
-        
-        # Step 1: Google CSE Search
-        search_results = self._google_cse_search(query, max_results)
-        
-        if not search_results:
-            return self._fallback_search(query)
-        
-        # Step 2: Deep scraping if enabled
-        if deep_scrape:
-            enhanced_results = []
-            for result in search_results[:5]:  # Limit deep scraping to top 5
-                try:
-                    scraped_data = self._scrape_page_content(result)
-                    result.update(scraped_data)
-                    enhanced_results.append(result)
-                    time.sleep(0.5)  # Rate limiting
-                except Exception as e:
-                    st.warning(f"Scraping failed for {result.get('source', 'unknown')}: {e}")
-                    enhanced_results.append(result)
-            
-            return enhanced_results
-        
-        return search_results
-    
-    def _google_cse_search(self, query: str, max_results: int):
-        """Core Google CSE search"""
-        
-        if not self.api_key:
-            st.error("🔑 Google CSE API key missing")
-            return []
-        
-        try:
-            url = "https://www.googleapis.com/customsearch/v1"
-            
-            params = {
-                'key': self.api_key,
-                'cx': self.cse_id,
-                'q': self._optimize_query(query),
-                'num': min(max_results, 10),
-                'fields': 'items(title,snippet,link,pagemap)'
-            }
-            
+
+}
+
             response = self.session.get(url, params=params, timeout=15)
-            
+
             if response.status_code == 200:
                 data = response.json()
                 return self._parse_search_results(data)
@@ -111,55 +69,55 @@ class EnhancedGoogleCSE:
             else:
                 st.error(f"Search API error: {response.status_code}")
                 return []
-                
+
         except Exception as e:
             st.error(f"Search failed: {e}")
             return []
-    
+
     def _scrape_page_content(self, result: dict) -> dict:
         """Scrape additional data from page content"""
-        
+
         url = result.get('url', '')
         if not url:
             return {}
-        
+
         try:
             response = self.session.get(url, timeout=10)
             if response.status_code != 200:
                 return {}
-            
+
             soup = BeautifulSoup(response.content, 'html.parser')
-            
+
             # Determine site type for targeted extraction
             site_type = self._detect_site_type(url)
-            
+
             # Extract structured data
             extracted_data = self._extract_structured_data(soup, site_type)
-            
+
             # Extract additional text patterns
             page_text = soup.get_text()
             text_data = self._extract_from_text(page_text, site_type)
-            
+
             # Merge data
             extracted_data.update(text_data)
-            
+
             return {
                 'scraped_data': extracted_data,
                 'scraping_success': True,
                 'page_size': len(page_text)
             }
-            
+
         except Exception as e:
             return {
                 'scraping_success': False,
                 'scraping_error': str(e)
             }
-    
+
     def _detect_site_type(self, url: str) -> str:
         """Detect website type for targeted extraction"""
-        
+
         url_lower = url.lower()
-        
+
         if 'transfermarkt' in url_lower:
             return 'transfermarkt'
         elif 'whoscored' in url_lower:
@@ -170,15 +128,15 @@ class EnhancedGoogleCSE:
             return 'espn'
         else:
             return 'generic'
-    
+
     def _extract_structured_data(self, soup: BeautifulSoup, site_type: str) -> dict:
         """Extract structured data based on site type"""
-        
+
         data = {}
-        
+
         if site_type == 'transfermarkt':
             # Transfermarkt-specific extraction
-            
+
             # Market value
             market_value_elem = soup.find('span', {'class': re.compile(r'.*market.*value.*', re.I)})
             if market_value_elem:
@@ -186,7 +144,7 @@ class EnhancedGoogleCSE:
                 value_match = re.search(r'€([\d.]+)m?', value_text)
                 if value_match:
                     data['market_value'] = f"€{value_match.group(1)}M"
-            
+
             # Age from profile
             age_elem = soup.find('span', string=re.compile(r'Age:'))
             if age_elem:
@@ -194,58 +152,50 @@ class EnhancedGoogleCSE:
                 age_match = re.search(r'(\d{1,2})', age_text)
                 if age_match:
                     data['age'] = int(age_match.group(1))
-            
+
             # Position
             position_elem = soup.find('dd', {'class': re.compile(r'.*position.*', re.I)})
             if position_elem:
                 data['position'] = position_elem.get_text().strip()
-        
+
+data['position'] = position_elem.get_text().strip()
+
         elif site_type == 'whoscored':
             # WhoScored-specific extraction
-            
-            # Rating
             rating_elem = soup.find('span', {'class': re.compile(r'.*rating.*', re.I)})
             if rating_elem:
                 rating_text = rating_elem.get_text()
                 rating_match = re.search(r'([\d.]+)', rating_text)
                 if rating_match:
                     data['whoscored_rating'] = float(rating_match.group(1))
-        
+
         # Generic structured data
-        
-        # Look for JSON-LD structured data
         json_scripts = soup.find_all('script', {'type': 'application/ld+json'})
         for script in json_scripts:
             try:
                 json_data = json.loads(script.string)
-                if isinstance(json_data, dict):
-                    if 'Person' in json_data.get('@type', ''):
-                        data['structured_name'] = json_data.get('name', '')
-                        data['structured_age'] = json_data.get('age', '')
+                if isinstance(json_data, dict) and 'Person' in json_data.get('@type', ''):
+                    data['structured_name'] = json_data.get('name', '')
+                    data['structured_age'] = json_data.get('age', '')
             except:
                 continue
-        
-        # Look for meta tags
+
         meta_description = soup.find('meta', {'name': 'description'})
         if meta_description:
-            desc_content = meta_description.get('content', '')
-            data['meta_description'] = desc_content
-        
+            data['meta_description'] = meta_description.get('content', '')
+
         return data
-    
+
     def _extract_from_text(self, text: str, site_type: str) -> dict:
         """Extract data using regex patterns from page text"""
-        
         data = {}
         patterns = self.extraction_patterns.get(site_type, self.extraction_patterns['generic'])
-        
+
         for field, pattern_list in patterns.items():
             for pattern in pattern_list:
                 match = re.search(pattern, text, re.IGNORECASE | re.MULTILINE)
                 if match:
                     value = match.group(1).strip()
-                    
-                    # Clean and convert values
                     if field in ['age', 'goals', 'assists']:
                         try:
                             data[field] = int(value)
@@ -256,40 +206,34 @@ class EnhancedGoogleCSE:
                         data[field] = f"€{value}M" if not value.startswith('€') else value
                         break
                     elif field in ['position', 'club']:
-                        if len(value) > 2 and len(value) < 50:  # Reasonable length
+                        if 2 < len(value) < 50:
                             data[field] = value
                             break
-        
+
         return data
-    
+
     def _optimize_query(self, query: str) -> str:
         """Optimize search query for better results"""
-        
         query_lower = query.lower()
-        
-        # Add football context
+
         if not any(term in query_lower for term in ['football', 'soccer', 'player']):
             query += " football player"
-        
-        # Add site preference for market data
+
         if any(term in query_lower for term in ['value', 'transfer', 'market']):
             query += " site:transfermarkt.com OR site:whoscored.com"
-        
-        # Add year for recent stats
+
         if any(term in query_lower for term in ['stats', 'goals', 'assists', '2024']):
             if '2024' not in query:
                 query += " 2024"
-        
+
         return query
-    
+
     def _parse_search_results(self, data: dict) -> list:
         """Parse Google CSE response with enhanced data extraction"""
-        
         if 'items' not in data:
             return []
-        
+
         results = []
-        
         for item in data['items']:
             result = {
                 'title': item.get('title', ''),
@@ -297,8 +241,8 @@ class EnhancedGoogleCSE:
                 'url': item.get('link', ''),
                 'source': self._get_source_name(item.get('link', ''))
             }
-            
-            # Extract data from snippet
+
+# Extract data from snippet
             snippet_data = self._extract_from_text(result['snippet'], 'generic')
             result.update(snippet_data)
             
@@ -398,10 +342,10 @@ class EnhancedGoogleCSE:
                 'age': 25,
                 'goals': 15,
                 'assists': 9,
-                'position': 'Forward',
-                'market_value': '€2.1M',
-                'club': 'Professional Club',
-                'scraped_data': {'status': 'Active', 'data_confidence': 'moderate'}
+                'position': 'Winger',
+                'market_value': '€1M',
+                'club': 'Club Unknown',
+                'scraped_data': {'scout_rating': 'Reliable', 'last_performance': '2024-12-12'}
             }]
 
 class AdvancedFootballScout:
@@ -498,8 +442,8 @@ class AdvancedFootballScout:
             priority.append('position_focus')
         
         return priority
-    
-    def _targeted_player_search(self, player_name: str, deep_scrape: bool) -> list:
+
+def _targeted_player_search(self, player_name: str, deep_scrape: bool) -> list:
         """Targeted searches for specific player"""
         
         targeted_queries = [
@@ -598,7 +542,8 @@ class AdvancedFootballScout:
             
             # Market data
             if 'market_value' in result and result['market_value']:
-                if 'market_value' not in consolidated['market_data'] or reliability > consolidated['data_quality'].get('market_value', 0):
+                # continua nel prossimo blocco...
+if 'market_value' not in consolidated['market_data'] or reliability > consolidated['data_quality'].get('market_value', 0):
                     consolidated['market_data']['market_value'] = result['market_value']
                     consolidated['data_quality']['market_value'] = reliability
                     consolidated['data_quality']['market_value_source'] = source
@@ -779,6 +724,7 @@ def format_enhanced_markdown_report(report: dict) -> str:
 """
     return md
 
+
 def main():
     st.title("🦍⚽ APES Football Scout")
     st.markdown("### Enhanced AI-Powered Scouting with Deep Web Scraping")
@@ -798,13 +744,13 @@ def main():
         ["Specific Player", "Generic Scouting"],
         help="Choose search strategy"
     )
-    
-    enable_scraping = st.sidebar.checkbox(
+
+enable_scraping = st.sidebar.checkbox(
         "Enable Deep Scraping",
         value=True,
         help="Scrape actual page content for enhanced data (slower but more accurate)"
     )
-    
+
     max_sources = st.sidebar.slider(
         "Max Sources",
         min_value=5,
@@ -812,12 +758,12 @@ def main():
         value=10,
         help="Maximum number of sources to search"
     )
-    
+
     export_format = st.sidebar.selectbox(
         "Export Format",
         ["Both", "JSON", "Markdown"]
     )
-    
+
     st.sidebar.markdown("---")
     st.sidebar.markdown("### 🎯 Enhanced Features")
     st.sidebar.markdown("""
@@ -828,10 +774,10 @@ def main():
     ✅ **WhoScored Statistics**  
     ✅ **Data Quality Scoring**
     """)
-    
+
     st.sidebar.markdown("---")
     st.sidebar.markdown("### 💡 Search Examples")
-    
+
     if search_mode == "Specific Player":
         examples = [
             "Khvicha Kvaratskhelia",
@@ -846,14 +792,14 @@ def main():
             "attaccante veloce under 20",
             "difensore centrale brasiliano"
         ]
-    
+
     for example in examples:
         if st.sidebar.button(f"🔍 {example}", key=f"example_{example.replace(' ', '_')}"):
             st.experimental_set_query_params(q=example)
-    
+
     # Main interface
     col1, col2 = st.columns([4, 1])
-    
+
     with col1:
         if search_mode == "Specific Player":
             query = st.text_input(
@@ -867,7 +813,7 @@ def main():
                 placeholder="e.g., trequartista argentino u17",
                 help="Describe the type of player you're looking for"
             )
-    
+
     with col2:
         st.markdown("<br>", unsafe_allow_html=True)
         scout_btn = st.button(
@@ -876,7 +822,7 @@ def main():
             use_container_width=True,
             help="Start enhanced scouting with web scraping"
         )
-    
+
     if scout_btn and query:
         st.markdown("---")
         
@@ -895,38 +841,31 @@ def main():
             
             # Enhanced metrics dashboard
             col1, col2, col3, col4, col5 = st.columns(5)
-            
-            with col1:
-                st.metric(
-                    "Data Quality", 
-                    f"{report['metadata']['data_quality_score']}/100",
-                    help="Overall data quality score"
-                )
-            
-            with col2:
+
+with col2:
                 goals = report['consolidated_profile']['performance_stats'].get('goals', 0)
                 st.metric("Goals", goals if goals else "N/A")
-            
+
             with col3:
                 assists = report['consolidated_profile']['performance_stats'].get('assists', 0)
                 st.metric("Assists", assists if assists else "N/A")
-            
+
             with col4:
                 st.metric(
-                    "Total Contrib.", 
+                    "Total Contrib.",
                     report['recommendation']['total_contributions']
                 )
-            
+
             with col5:
                 st.metric(
-                    "Confidence", 
+                    "Confidence",
                     f"{report['recommendation']['confidence_score']:.0f}%"
                 )
-            
+
             # Enhanced recommendation display
             rec = report['recommendation']['decision']
             reasoning = report['recommendation']['reasoning']
-            
+
             if rec == "BUY":
                 st.success(f"🎯 **RECOMMENDATION: {rec}** - {reasoning}")
             elif rec == "MONITOR":
@@ -935,32 +874,32 @@ def main():
                 st.info(f"🔍 **RECOMMENDATION: {rec}** - {reasoning}")
             else:
                 st.error(f"❓ **RECOMMENDATION: {rec}** - {reasoning}")
-            
+
             # Enhanced profile sections
             profile = report['consolidated_profile']
-            
+
             # Basic Profile
             with st.expander("👤 Consolidated Player Profile", expanded=True):
                 col1, col2, col3 = st.columns(3)
-                
+
                 basic = profile['basic_info']
                 with col1:
                     st.write("**Basic Information**")
                     st.write(f"Age: {basic.get('age', 'Unknown')}")
                     st.write(f"Position: {basic.get('position', 'Unknown')}")
-                
+
                 performance = profile['performance_stats']
                 with col2:
                     st.write("**Performance Stats**")
                     st.write(f"Goals: {performance.get('goals', 'N/A')}")
                     st.write(f"Assists: {performance.get('assists', 'N/A')}")
-                
+
                 market = profile['market_data']
                 with col3:
                     st.write("**Market Data**")
                     st.write(f"Club: {basic.get('club', 'Unknown')}")
                     st.write(f"Value: {market.get('market_value', 'Unknown')}")
-            
+
             # Technical Data from Scraping
             technical = profile['technical_data']
             if technical:
@@ -968,15 +907,15 @@ def main():
                     tech_cols = st.columns(2)
                     items = list(technical.items())
                     mid = len(items) // 2
-                    
+
                     with tech_cols[0]:
                         for key, value in items[:mid]:
                             st.write(f"**{key.replace('_', ' ').title()}:** {value}")
-                    
+
                     with tech_cols[1]:
                         for key, value in items[mid:]:
                             st.write(f"**{key.replace('_', ' ').title()}:** {value}")
-            
+
             # Data Sources Analysis
             with st.expander("📚 Data Sources Analysis"):
                 sources_df_data = []
@@ -986,20 +925,20 @@ def main():
                         'Scraped': '✅' if source['scraped'] else '❌',
                         'Title': source['title']
                     })
-                
+
                 if sources_df_data:
                     import pandas as pd
                     sources_df = pd.DataFrame(sources_df_data)
                     st.dataframe(sources_df, use_container_width=True)
-                
+
                 # Scraping summary
                 scraping = report['scraping_summary']
-                st.write(f"**Scraping Summary:**")
+                st.write("**Scraping Summary:**")
                 st.write(f"• Pages Scraped: {scraping['total_pages_scraped']}")
                 st.write(f"• Success Rate: {scraping['scraping_success_rate']}")
                 st.write(f"• Unique Sources: {scraping['data_consolidation_sources']}")
-            
-            # Enhanced Export Section
+
+# Enhanced Export Section
             st.markdown("---")
             st.subheader("📤 Enhanced Export Options")
             
@@ -1102,5 +1041,14 @@ def main():
         unsafe_allow_html=True
     )
 
+""",
+        unsafe_allow_html=True
+    )
+
 if __name__ == "__main__":
     main()
+
+
+
+
+
