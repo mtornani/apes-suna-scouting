@@ -866,7 +866,7 @@ def main():
     col1, col2 = st.columns([4, 1])
     
     # Check for query params
-    query_param = st.query_params.get("q", "")
+    query_param = st.experimental_get_query_params().get("q", [""])[0]
     
     with col1:
         if search_mode == "Specific Player":
