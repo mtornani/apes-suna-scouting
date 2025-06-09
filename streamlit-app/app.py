@@ -377,35 +377,41 @@ def main():
                           placeholder="Es. Victor Osimhen, centrocampista spagnolo U20")
 
     if st.button("🚀 Avvia Ricerca") and query.strip():
-        with st.spinner("Analisi in corso..."):
-            scout = AdvancedFootballScout()
-            results = scout.search(query)
-            consolidated = scout.consolidate(results)
-            report = scout._generate_report(consolidated, results, query)
+    with st.spinner("Analisi in corso..."):
+        # ✅ Crea prima il motore di ricerca
+        search_engine = EnhancedGoogleCSE()
 
-            st.success(f"✅ Report generato con decisione finale: **{report['decision']}**")
+        # ✅ Passa il motore alla classe principale
+        scout = AdvancedFootballScout(search_engine)
 
-            # Output principale
-            st.markdown("### 📝 Report Sintetico")
-            st.markdown(report["markdown"])
+        results = scout.search(query)
+        consolidated = scout.consolidate(results)
+        report = scout._generate_report(consolidated, results, query)
 
-            # Espansori avanzati
-            with st.expander("📦 Dati Consolidati (JSON)"):
-                st.code(report["json"], language="json")
+        st.success(f"✅ Report generato con decisione finale: **{report['decision']}**")
 
-            with st.expander("📊 Dati in CSV"):
-                st.download_button("⬇️ Scarica CSV", data=report["csv"], file_name="scouting_report.csv")
+        # Output principale
+        st.markdown("### 📝 Report Sintetico")
+        st.markdown(report["markdown"])
 
-            with st.expander("🌐 Fonti Utilizzate"):
-                for r in results:
-                    if r.get("source_url"):
-                        st.markdown(f"- 🔗 [{urlparse(r['source_url']).netloc}]({r['source_url']})")
+        # Espansori avanzati
+        with st.expander("📦 Dati Consolidati (JSON)"):
+            st.code(report["json"], language="json")
 
-    st.markdown("---")
-    st.caption("Powered by APES 🧬 – Data-enhanced football intelligence.")
+        with st.expander("📊 Dati in CSV"):
+            st.download_button("⬇️ Scarica CSV", data=report["csv"], file_name="scouting_report.csv")
+
+        with st.expander("🌐 Fonti Utilizzate"):
+            for r in results:
+                if r.get("source_url"):
+                    st.markdown(f"- 🔗 [{urlparse(r['source_url']).netloc}]({r['source_url']})")
+
+st.markdown("---")
+st.caption("Powered by APES 🧬 – Data-enhanced football intelligence.")
 
 if __name__ == "__main__":
     main()
+
 
 
 
