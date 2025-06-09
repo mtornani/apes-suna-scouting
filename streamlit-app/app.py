@@ -858,28 +858,32 @@ def main():
             "difensore centrale brasiliano"
         ]
     
+    # Store selected example in session state
+    if 'selected_example' not in st.session_state:
+        st.session_state.selected_example = None
+    
     for example in examples:
         if st.sidebar.button(f"🔍 {example}", key=f"example_{example.replace(' ', '_')}"):
-            st.query_params.update({"q": example})
+            st.session_state.selected_example = example
     
     # Main interface
     col1, col2 = st.columns([4, 1])
     
-    # Check for query params
-    query_param = st.experimental_get_query_params().get("q", [""])[0]
-    
     with col1:
+        # Use session state for query if example was selected
+        default_value = st.session_state.selected_example if st.session_state.selected_example else ""
+        
         if search_mode == "Specific Player":
             query = st.text_input(
                 "🎯 Player Name",
-                value=query_param,
+                value=default_value,
                 placeholder="e.g., Khvicha Kvaratskhelia",
                 help="Enter the full name of the player you want to scout"
             )
         else:
             query = st.text_input(
                 "🔍 Scouting Criteria",
-                value=query_param,
+                value=default_value,
                 placeholder="e.g., trequartista argentino u17",
                 help="Describe the type of player you're looking for"
             )
@@ -1071,7 +1075,7 @@ def main():
         st.warning("⚠️ Please enter a search query to start advanced scouting")
     
     # Feature showcase
-    if not scout_btn or not query:
+    if not scout_btn:
         st.markdown("---")
         st.subheader("🚀 Enhanced Features Overview")
         
